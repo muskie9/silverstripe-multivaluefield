@@ -3,8 +3,11 @@
 namespace Symbiote\MultiValueField\Fields;
 
 use SilverStripe\Forms\FormField;
+use SilverStripe\View\HTML;
 use SilverStripe\View\Requirements;
 use SilverStripe\Core\Convert;
+use SilverStripe\Control\Controller;
+use SilverStripe\CMS\Controllers\ContentController;
 
 /**
  * A text field for multivalued text entry
@@ -19,9 +22,11 @@ class MultiValueTextField extends FormField
 
 	public function Field($properties = [])
     {
-		Requirements::javascript(ADMIN_THIRDPARTY_DIR . '/jquery/jquery.js');
-		Requirements::javascript('multivaluefield/javascript/multivaluefield.js');
-		Requirements::css('multivaluefield/css/multivaluefield.css');
+	    if (Controller::curr() instanceof ContentController) {
+		    Requirements::javascript('silverstripe/admin: thirdparty/jquery/jquery.js');
+	    }
+	    Requirements::javascript('symbiote/multivaluefield: javascript/multivaluefield.js');
+	    Requirements::css('symbiote/multivaluefield: css/multivaluefield.css');
 
 		$name = $this->name . '[]';
 		$fields = [];
@@ -63,12 +68,12 @@ class MultiValueTextField extends FormField
 
 	public function createReadonlyInput($attributes, $value)
     {
-		return self::create_tag('span', $attributes, Convert::raw2xml($value));
+		return HTML::createTag('span', $attributes, Convert::raw2xml($value));
 	}
 
 	public function createInput($attributes, $value = null)
     {
-		return self::create_tag($this->tag, $attributes, $value);
+		return HTML::createTag($this->tag, $attributes, $value);
 	}
 
 	public function performReadonlyTransformation()

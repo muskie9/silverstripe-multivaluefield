@@ -2,6 +2,9 @@
 
 namespace Symbiote\MultiValueField\Fields;
 
+use SilverStripe\CMS\Controllers\ContentController;
+use SilverStripe\Control\Controller;
+use SilverStripe\View\HTML;
 use SilverStripe\View\Requirements;
 use SilverStripe\Core\Convert;
 
@@ -14,9 +17,9 @@ class MultiValueDropdownField extends MultiValueTextField
 {
 	protected $source;
 
-	public function __construct($name, $title = null, $source = [], $value=null, $form=null)
+	public function __construct($name, $title = null, $source = [], $value=null)
     {
-		parent::__construct($name, ($title===null) ? $name : $title, $value, $form);
+		parent::__construct($name, ($title===null) ? $name : $title, $value);
 		$this->source = $source;
 	}
 
@@ -40,9 +43,11 @@ class MultiValueDropdownField extends MultiValueTextField
 
 	public function Field($properties = [])
     {
-		Requirements::javascript(ADMIN_THIRDPARTY_DIR . '/jquery/jquery.js');
-		Requirements::javascript('multivaluefield/javascript/multivaluefield.js');
-		Requirements::css('multivaluefield/css/multivaluefield.css');
+	    if (Controller::curr() instanceof ContentController) {
+		    Requirements::javascript('silverstripe/admin: thirdparty/jquery/jquery.js');
+	    }
+	    Requirements::javascript('symbiote/multivaluefield: javascript/multivaluefield.js');
+	    Requirements::css('symbiote/multivaluefield: css/multivaluefield.css');
 
 		$name = $this->name . '[]';
 		$fields = [];
@@ -57,7 +62,7 @@ class MultiValueDropdownField extends MultiValueTextField
 						'name' => $name,
 						'tabindex' => $this->getAttribute('tabindex')
 					];
-					$fields[] = self::create_tag('span', $fieldAttr, Convert::raw2xml($v));
+					$fields[] = HTML::createTag('span', $fieldAttr, Convert::raw2xml($v));
 				} else {
 					$fields[] = $this->createSelectList($i, $name, $this->source, $v);
 				}
@@ -80,7 +85,7 @@ class MultiValueDropdownField extends MultiValueTextField
 
 	protected function createSelectList($number, $name, $values, $selected = '')
     {
-		$options = self::create_tag(
+		$options = HTML::createTag(
 			'option',
 			[
 				'selected' => $selected == '' ? 'selected' : '',
@@ -94,7 +99,7 @@ class MultiValueDropdownField extends MultiValueTextField
 			if ($index == $selected) {
 				$attrs['selected'] = 'selected';
 			}
-			$options .= self::create_tag('option', $attrs, Convert::raw2xml($title));
+			$options .= HTML::createTag('option', $attrs, Convert::raw2xml($title));
 		}
 
 		$attrs = [
@@ -106,6 +111,6 @@ class MultiValueDropdownField extends MultiValueTextField
 
 		if($this->disabled) $attrs['disabled'] = 'disabled';
 
-		return self::create_tag('select', $attrs, $options);
+		return HTML::createTag('select', $attrs, $options);
 	}
 }

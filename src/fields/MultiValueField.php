@@ -25,7 +25,7 @@ class MultiValueField extends DBText
     {
         // if we're not deserialised yet, do so
         if (is_string($this->value)) {
-            $this->value = unserialize($this->value);
+            $this->value = json_decode($this->value);
         }
         return $this->value;
     }
@@ -40,12 +40,15 @@ class MultiValueField extends DBText
      * ... doesn't. DataObject tries setting this at times that it shouldn't :/
      *
      * @param string $name
+     *
+     * @return $this
      */
     public function setName($name)
     {
         if (!$this->name) {
             parent::setName($name);
         }
+        return $this;
     }
 
     /**
@@ -54,14 +57,18 @@ class MultiValueField extends DBText
      * For a multivalue field, this will deserialise the value if it is a string
      * @param mixed $value
      * @param array $record
+     * @param bool $markChanged
+     *
+     * @return $this
      */
     public function setValue($value, $record = null, $markChanged = true)
     {
         if ($value && is_string($value)) {
-            $value = unserialize($value);
+            $value = json_decode($value);
         }
 
         parent::setValue($value, $record, $markChanged);
+        return $this;
     }
 
     /**
@@ -77,7 +84,7 @@ class MultiValueField extends DBText
                 $value = $value->getValue();
             }
             if (is_object($value) || is_array($value)) {
-                $value = serialize($value);
+                $value = json_encode($value);
             }
             return parent::prepValueForDB($value);
         }
@@ -85,7 +92,7 @@ class MultiValueField extends DBText
 
     public function isChanged()
     {
-        return $this->changed;
+        return $this->isChanged;
     }
 
     public function scaffoldFormField($title = null, $params = null)

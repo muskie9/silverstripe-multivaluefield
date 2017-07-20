@@ -1,9 +1,9 @@
 <?php
-namespace SilverStripeAustralia\MultiValueField\Tests;
+namespace Symbiote\MultiValueField\Tests;
 
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\ORM\FieldType\DBField;
-use SilverStripeAustralia\MultiValueField\Fields\MultiValueField;
+use Symbiote\MultiValueField\Fields\MultiValueField;
 
 
 /**
@@ -39,7 +39,7 @@ class MultiValueFieldTest extends SapphireTest {
 
     public function testSetSerialisedStringAsProperty() {
         $obj = new MultiValueFieldTest_DataObject();
-        $obj->MVField = serialize(['One', 'Two']);
+        $obj->MVField = json_encode(['One', 'Two']);
         $obj->write();
 
         $obj = MultiValueFieldTest_DataObject::get()->byID($obj->ID);
@@ -49,7 +49,7 @@ class MultiValueFieldTest extends SapphireTest {
 
     public function testSetSerialisedStringWithSetValue() {
         $obj = new MultiValueFieldTest_DataObject();
-        $obj->obj('MVField')->setValue(serialize(['One', 'Two']));
+        $obj->MVField = json_encode(['One', 'Two']);
         $obj->write();
 
         $obj = MultiValueFieldTest_DataObject::get()->byID($obj->ID);
@@ -59,7 +59,7 @@ class MultiValueFieldTest extends SapphireTest {
 
     public function testSetArrayWithSetValue() {
         $obj = new MultiValueFieldTest_DataObject();
-        $obj->obj('MVField')->setValue(['One', 'Two']);
+        $obj->MVField = ['One', 'Two'];
         $obj->write();
 
         $obj = MultiValueFieldTest_DataObject::get()->byID($obj->ID);

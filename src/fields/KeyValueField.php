@@ -2,6 +2,9 @@
 
 namespace Symbiote\MultiValueField\Fields;
 
+use SilverStripe\CMS\Controllers\ContentController;
+use SilverStripe\Control\Controller;
+use SilverStripe\View\HTML;
 use SilverStripe\View\Requirements;
 use SilverStripe\Core\Convert;
 
@@ -15,18 +18,20 @@ class KeyValueField extends MultiValueTextField
     protected $sourceKeys;
     protected $sourceValues;
 
-    public function __construct($name, $title = null, $sourceKeys = [], $sourceValues = [], $value=null, $form=null)
+    public function __construct($name, $title = null, $sourceKeys = [], $sourceValues = [], $value=null)
     {
-        parent::__construct($name, ($title===null) ? $name : $title, $value, $form);
+        parent::__construct($name, ($title===null) ? $name : $title, $value);
         $this->sourceKeys = $sourceKeys;
         $this->sourceValues = $sourceValues;
     }
 
     public function Field($properties = [])
     {
-        Requirements::javascript(ADMIN_THIRDPARTY_DIR . '/jquery/jquery.js');
-        Requirements::javascript('multivaluefield/javascript/multivaluefield.js');
-        Requirements::css('multivaluefield/css/multivaluefield.css');
+	    if (Controller::curr() instanceof ContentController) {
+		    Requirements::javascript('silverstripe/admin: thirdparty/jquery/jquery.js');
+	    }
+	    Requirements::javascript('symbiote/multivaluefield: javascript/multivaluefield.js');
+	    Requirements::css('symbiote/multivaluefield: css/multivaluefield.css');
 
         $nameKey = $this->name . '[key][]';
         $nameVal = $this->name . '[val][]';
@@ -42,9 +47,9 @@ class KeyValueField extends MultiValueTextField
                         'tabindex' => $this->getAttribute('tabindex')
                     ];
 
-                    $keyField = self::create_tag('span', $fieldAttr, Convert::raw2xml($i));
+                    $keyField = HTML::createTag('span', $fieldAttr, Convert::raw2xml($i));
                     $fieldAttr['id'] = $this->id().MultiValueTextField::KEY_SEP.$v;
-                    $valField = self::create_tag('span', $fieldAttr, Convert::raw2xml($v));
+                    $valField = HTML::createTag('span', $fieldAttr, Convert::raw2xml($v));
                     $fields[] = $keyField . $valField;
                 } else {
                     $keyField = $this->createSelectList($i, $nameKey, $this->sourceKeys, $i);
@@ -68,7 +73,7 @@ class KeyValueField extends MultiValueTextField
 
     protected function createSelectList($number, $name, $values, $selected = '')
     {
-        $options = self::create_tag(
+        $options = HTML::createTag(
             'option',
             [
                 'selected' => $selected == '' ? 'selected' : '',
@@ -82,7 +87,7 @@ class KeyValueField extends MultiValueTextField
             if ($index == $selected) {
                 $attrs['selected'] = 'selected';
             }
-            $options .= self::create_tag('option', $attrs, Convert::raw2xml($title));
+            $options .= HTML::createTag('option', $attrs, Convert::raw2xml($title));
         }
 
         if (count($values)) {
@@ -95,7 +100,7 @@ class KeyValueField extends MultiValueTextField
 
             if($this->disabled) $attrs['disabled'] = 'disabled';
 
-            return self::create_tag('select', $attrs, $options);
+            return HTML::createTag('select', $attrs, $options);
         } else {
             $attrs = [
                 'class' => 'text mventryfield mvtextfield ' . ($this->extraClass() ? $this->extraClass() : ''),
@@ -108,7 +113,7 @@ class KeyValueField extends MultiValueTextField
 
             if($this->disabled) $attrs['disabled'] = 'disabled';
 
-            return self::create_tag('input', $attrs);
+            return HTML::createTag('input', $attrs);
         }
     }
 

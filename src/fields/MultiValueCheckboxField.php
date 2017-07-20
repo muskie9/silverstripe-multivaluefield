@@ -19,7 +19,7 @@ class MultiValueCheckboxField extends CheckboxSetField
     protected $disabled = false;
 
     /**
-     * @var Array
+     * @var array
      */
     protected $defaultItems = [];
 
@@ -139,7 +139,7 @@ class MultiValueCheckboxField extends CheckboxSetField
      * Note: Items marked as disabled through {@link setDisabledItems()} can still be
      * selected by default through this method.
      *
-     * @param Array $items Collection of array keys, as defined in the $source array
+     * @param array $items Collection of array keys, as defined in the $source array
      */
     public function setDefaultItems($items)
     {
@@ -158,7 +158,7 @@ class MultiValueCheckboxField extends CheckboxSetField
     }
 
     /**
-     * @return Array
+     * @return array
      */
     public function getDefaultItems()
     {
@@ -270,7 +270,7 @@ class MultiValueCheckboxField extends CheckboxSetField
                         $data[] = $item['Title'];
                     } elseif(is_array($this->source) && !empty($this->source[$item])) {
                         $data[] = $this->source[$item];
-                    } elseif(is_a($this->source, 'DataObjectSet')) {
+                    } elseif(is_a($this->source, 'DataObjectSet') && isset($sourceTitles)) {
                         $data[] = $sourceTitles[$item];
                     } else {
                         $data[] = $item;
@@ -289,8 +289,4 @@ class MultiValueCheckboxField extends CheckboxSetField
         return $field;
     }
 
-    public function ExtraOptions()
-    {
-        return FormField::ExtraOptions();
-    }
 }
